@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>玩家查询</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page-header">
+    <div>
+        <div class="title">求生之路2 · 玩家定位</div>
+        <div class="subtitle">关键词: {{ query }} · 命中 {{ hits | length }} 名玩家</div>
+    </div>
+    <div class="stat-bar">
+        <div>{{ updated_at }}</div>
+    </div>
+</div>
+
+{% if hits %}
+    {% for h in hits %}
+        <div class="player-result">
+            <h2>{% if h.index %}<span class="srv-idx">#{{ h.index }}</span>{% endif %}{{ h.server.name }}</h2>
+            <div class="who">
+                <span class="you">{{ h.player.name }}</span>
+                {% if h.player.is_spectator %}<span class="pill">观战</span>{% endif %}
+                正在游玩中
+            </div>
+            <div class="kv">
+                <div class="k">地图</div>
+                <div class="v">{{ h.server.map }}{% if h.server.progress %} [{{ h.server.progress }}]{% endif %}</div>
+
+                <div class="k">模式 / 难度</div>
+                <div class="v">{% if h.server.mode == 'versus' %}对抗{% else %}合作{% endif %} · {{ h.server.difficulty or '?' }}</div>
+
+                <div class="k">在线玩家</div>
+                <div class="v">{{ h.server.num }}/{{ h.server.max }}</div>
+
+                <div class="k">已游玩</div>
+                <div class="v">{{ h.player_time }}</div>
+
+                {% if h.steam_id64 %}
+                <div class="k">SteamID64</div>
+                <div class="v">{{ h.steam_id64 }}</div>
+                {% endif %}
+
+                <div class="k">服务器地区</div>
+                <div class="v">{{ h.server.region or '未知' }}</div>
+
+                <div class="k">连接地址</div>
+                <div class="v">{{ h.server.address }}</div>
+
+                {% if h.index %}
+                <div class="k">详情查询</div>
+                <div class="v">/查服 {{ h.index }}</div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="no-result">未找到名为「{{ query }}」的玩家。</div>
+{% endif %}
+
+<div class="footer">Powered by NoneBot2 · KitaSoda SSE</div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>L4D2 服务器一览</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page-header">
+    <div>
+        <div class="title">求生之路2 · 服务器一览</div>
+        <div class="subtitle">活动 {{ stats.active_count }} / 已知 {{ stats.known_count }} · 数据来源 KitaSoda</div>
+    </div>
+    <div class="stat-bar">
+        <div><span class="big">{{ stats.total_players }}</span> 名玩家在线</div>
+        <div>{{ stats.updated_at }}</div>
+        <div>提示: /查服 [编号] 查看详情</div>
+    </div>
+</div>
+
+<div class="grid">
+{% for s in servers %}
+    <div class="card {% if s.idle %}idle{% elif s.mode == 'versus' %}versus{% elif s.oversea %}oversea{% elif s.num == 1 %}solo{% endif %}">
+        <div class="card-head">
+            <div class="card-num">#{{ s.index }}</div>
+            <div class="card-name" title="{{ s.name }}">{{ s.name }}</div>
+            <div class="player-badge {% if s.idle %}empty{% elif s.num >= s.max %}full{% elif s.num >= s.max * 0.75 %}high{% endif %}">
+                {{ s.num }}/{{ s.max }}
+            </div>
+        </div>
+
+        <div class="card-meta">
+            {% if s.mode == 'versus' %}
+                <span class="pill danger">对抗</span>
+            {% else %}
+                <span class="pill">合作</span>
+            {% endif %}
+            {% if s.difficulty %}
+                <span class="pill {% if '专家' in s.difficulty %}danger{% elif '高级' in s.difficulty %}warn{% endif %}">{{ s.difficulty }}</span>
+            {% endif %}
+            {% if s.region %}<span class="pill">{{ s.region }}</span>{% endif %}
+            {% if s.team_wipes > 0 %}<span class="pill warn">团灭{{ s.team_wipes }}</span>{% endif %}
+            {% if s.idle %}<span class="pill">空服</span>{% endif %}
+        </div>
+
+        <div class="map-row">
+            {{ s.map }}{% if s.progress %}<span class="progress">[{{ s.progress }}]</span>{% endif %}
+        </div>
+
+        {% if s.players %}
+        <div class="players">
+            {% for p in s.players %}
+            <div class="player {% if p.is_spectator %}spec{% endif %}" title="{{ p.raw_name }}">
+                {% if p.is_spectator %}观战 {% endif %}{{ p.name }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="address">{{ s.address }}</div>
+    </div>
+{% endfor %}
+</div>
+
+<div class="footer">Powered by NoneBot2 · KitaSoda SSE</div>
+</body>
+</html>
